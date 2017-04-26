@@ -22,7 +22,7 @@ INSTALLED_APPS = [
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sites",
-    "isnull_filter",
+    "tests",
 ]
 
 SITE_ID = 1
