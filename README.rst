@@ -25,33 +25,32 @@ Install Django isNull list_filter::
 
     pip install django-isnull-list-filter
 
-Add it to your `INSTALLED_APPS`:
+or use development version::
+
+    pip install -e git+https://github.com/PetrDlouhy/django-isnull-list-filter#egg=django-isnull-list-filter
+
+Directly use it in your admin:
 
 .. code-block:: python
 
-    INSTALLED_APPS = (
-        ...
-        'isnull_filter.apps.IsnullFilterConfig',
-        ...
-    )
+    from isnull_filter import isnull_filter
+      class MyAdmin(admin.ModelAdmin):
+         list_filter = (
+             isnull_filter('author'),  # Just set the field
+             isnull_filter('author', _("Hasn't got author")),  # Or you can override the default filter title
+         )
 
-Add Django isNull list_filter's URL patterns:
-
-.. code-block:: python
-
-    from isnull_filter import urls as isnull_filter_urls
-
-
-    urlpatterns = [
-        ...
-        url(r'^', include(isnull_filter_urls)),
-        ...
-    ]
 
 Features
 --------
 
-* TODO
+* Can be used on:
+    * simple field
+    * `ForeignKeyField`
+    * related `ForeignKeyField`
+    * `ManyToManyField`
+    * `OneToOneField`
+* Default title can be overriden
 
 Running Tests
 -------------
@@ -66,6 +65,10 @@ Does the code actually work?
 
 Credits
 -------
+
+Author:
+
+* Petr Dlouhý
 
 Tools used in rendering this package:
 
