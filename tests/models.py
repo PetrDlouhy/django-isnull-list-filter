@@ -19,6 +19,7 @@ class Album(models.Model):
         Author,
         null=True,
         blank=True,
+        related_name="coauthored_albums",
     )
     released = models.DateField(
         null=True,

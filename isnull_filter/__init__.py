@@ -21,7 +21,7 @@ def isnull_filter(field_name, filter_title=None):
                     self.title = _("Is related '%s' null?") % related_title
                 elif hasattr(related_field, 'related_model') and hasattr(related_field.related_model, "_meta"):
                     related_title = related_field.related_model._meta.verbose_name_plural
-                    self.title = _("Is foreign key '%s' null?") % related_title
+                    self.title = _("Is related '%s' null?") % related_title
                 else:
                     related_title = related_field.name
                     self.title = _("Is field '%s' null?") % related_title

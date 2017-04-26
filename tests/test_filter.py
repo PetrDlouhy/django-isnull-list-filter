@@ -106,19 +106,19 @@ class TestIsNullFilter(TestCase):
 
     def test_filter_released_title(self):
         f = isnull_filter('released')(self.request, {}, models.Album, None)
-        self.assertEquals(f.title, "Is field 'released' null?")
+        self.assertEquals(f.title, u"Is field 'released' null?")
 
     def test_filter_song_set_title(self):
         f = isnull_filter('song_set')(self.request, {}, models.Album, None)
-        self.assertEquals(f.title, "Is foreign key 'songs' null?")
+        self.assertEquals(f.title, u"Is related 'songs' null?")
 
     def test_filter_author_title(self):
         f = isnull_filter('author')(self.request, {}, models.Album, None)
-        self.assertEquals(f.title, "Is foreign key 'Authors' null?")
+        self.assertEquals(f.title, u"Is related 'Authors' null?")
 
     def test_filter_coauthors_title(self):
         f = isnull_filter('coauthors')(self.request, {}, models.Album, None)
-        self.assertEquals(f.title, "Is foreign key 'Authors' null?")
+        self.assertEquals(f.title, u"Is related 'Authors' null?")
 
     def test_filter_title_overriden(self):
         f = isnull_filter('author', 'Overriden title')(self.request, {}, models.Album, None)
