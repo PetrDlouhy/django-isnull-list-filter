@@ -54,8 +54,8 @@ if sys.argv[-1] == 'tag':
     os.system("git push --tags")
     sys.exit()
 
-readme = open('README.rst').read()
-history = open('HISTORY.rst').read().replace('.. :changelog:', '')
+readme = open('README.rst', encoding='utf-8').read()
+history = open('HISTORY.rst', encoding='utf-8').read().replace('.. :changelog:', '')
 
 setup(
     name='django-isnull-list-filter',
