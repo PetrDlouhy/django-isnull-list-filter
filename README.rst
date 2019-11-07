@@ -38,6 +38,7 @@ Directly use it in your admin:
          list_filter = (
              isnull_filter('author'),  # Just set the field
              isnull_filter('author', _("Hasn't got author")),  # Or you can override the default filter title
+             isnull_filter('author', _("Has got author"), negate=True),  # And you can negate the condition
          )
 
 
