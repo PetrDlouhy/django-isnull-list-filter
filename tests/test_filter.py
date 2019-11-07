@@ -9,7 +9,7 @@ Tests for `django-isnull-list-filter` models module.
 """
 import datetime
 
-from django.core.exceptions import FieldDoesNotExist
+from django.core.exceptions import FieldError
 from django.test import RequestFactory, TestCase
 
 from isnull_filter import isnull_filter
@@ -58,6 +58,16 @@ class TestIsNullFilter(TestCase):
         f = isnull_filter('song_set')(self.request, {}, models.Album, None)
         q = f.queryset(self.request, models.Album.objects.all())
         self.assertEquals(q.count(), 10)
+
+    def test_filter_song_author_related_yes(self):
+        f = isnull_filter('album__author')(self.request, {"album__author__isnull": "true"}, models.Song, None)
+        q = f.queryset(self.request, models.Song.objects.all())
+        self.assertEquals(q.count(), 1)
+
+    def test_filter_song_author_related_no(self):
+        f = isnull_filter('album__author')(self.request, {"album__author__isnull": "true"}, models.Song, None)
+        q = f.queryset(self.request, models.Song.objects.all())
+        self.assertEquals(q.count(), 1)
 
     def test_filter_author_yes(self):
         f = isnull_filter('author')(self.request, {"author__isnull": "true"}, models.Album, None)
@@ -125,5 +135,5 @@ class TestIsNullFilter(TestCase):
         self.assertEquals(f.title, "Overriden title")
 
     def test_filter_unexistent_field(self):
-        with self.assertRaises(FieldDoesNotExist):
+        with self.assertRaises(FieldError):
             isnull_filter('foo')(self.request, {}, models.Album, None)
