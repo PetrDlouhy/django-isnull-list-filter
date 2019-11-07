@@ -14,6 +14,7 @@ class Album(models.Model):
         Author,
         null=True,
         blank=True,
+        on_delete=models.CASCADE,
     )
     coauthors = models.ManyToManyField(
         Author,
@@ -31,4 +32,5 @@ class Song(models.Model):
     album = models.ForeignKey(
         Album,
         related_name="song_set",
+        on_delete=models.CASCADE,
     )
