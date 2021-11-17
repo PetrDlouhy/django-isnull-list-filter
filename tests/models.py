@@ -26,6 +26,11 @@ class Album(models.Model):
         null=True,
         blank=True,
     )
+    name = models.CharField(
+        null=True,
+        blank=True,
+        max_length=255,
+    )
 
 
 class Song(models.Model):

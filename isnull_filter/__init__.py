@@ -4,12 +4,13 @@ __version__ = '0.1.0'
 
 from django.contrib.admin import SimpleListFilter
 from django.core.exceptions import FieldDoesNotExist
+from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
 
 def isnull_filter(field_name, filter_title=None, negate=False, operator='null'):
     class HasRelatedFieldFilter(SimpleListFilter):
-        parameter_name = '%s__isnull' % field_name
+        parameter_name = f'{field_name}__is{operator}'
         related_field = field_name
 
         def __init__(self, request, field, model, model_admin):
@@ -43,21 +44,25 @@ def isnull_filter(field_name, filter_title=None, negate=False, operator='null'):
             ]
 
         def queryset(self, request, queryset):
-            kwargs = {}
-            _negate = negate
-            if operator == 'null':
-                if self.value() in ('false', 'False'):
-                    kwargs[f"{self.related_field}__exact"] = False
-                if self.value() in ('true', 'True'):
-                    kwargs[f"{self.related_field}__exact"] = True
-            elif operator == 'blank':
-                if self.value() in ('false', 'False'):
-                    _negate = not negate
-                kwargs[f"{self.related_field}__exact"] = ''
-            if _negate:
-                return queryset.exclude(**kwargs).distinct()
+            filters = Q()
+
+            if self.value() in ('true', 'True'):
+                value = True
+            elif self.value() in ('false', 'False'):
+                value = False
             else:
-                return queryset.filter(**kwargs).distinct()
+                value = None
+
+            if value is not None:
+                filters = Q(**{f"{self.related_field}__isnull": value})
+                if operator == 'blank':
+                    blank_filter = Q(**{f"{self.related_field}__exact": ''})
+                    filters |= blank_filter if value else ~blank_filter
+
+            if negate:
+                return queryset.exclude(filters).distinct()
+            else:
+                return queryset.filter(filters).distinct()
 
     return HasRelatedFieldFilter
 

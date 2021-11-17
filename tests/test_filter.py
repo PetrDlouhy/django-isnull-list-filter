@@ -12,7 +12,7 @@ import datetime
 from django.core.exceptions import FieldError
 from django.test import RequestFactory, TestCase
 
-from isnull_filter import isnull_filter
+from isnull_filter import isblank_filter, isnull_filter
 
 from model_mommy import mommy
 
@@ -29,6 +29,7 @@ class TestIsNullFilter(TestCase):
                 'Author',
                 _quantity=2,
             ),
+            name="Brothers in Arms",
             _quantity=2,
         )
         mommy.make(
@@ -39,10 +40,22 @@ class TestIsNullFilter(TestCase):
             'Album',
             author__name='Mark Knopfler',
             released=None,
-            _quantity=8,
+            _quantity=4,
+            name="",
+        )
+        mommy.make(
+            'Album',
+            author__name='Mark Knopfler',
+            released=None,
+            _quantity=4,
         )
         self.factory = RequestFactory()
         self.request = self.factory.get("")
+
+    def test_isblank_filter_name_true(self):
+        f = isblank_filter('name')(self.request, {"name__isblank": "true"}, models.Album, None)
+        q = f.queryset(self.request, models.Album.objects.all())
+        self.assertEquals(q.count(), 8)
 
     def test_filter_song_set_yes(self):
         f = isnull_filter('song_set')(self.request, {"song_set__isnull": "true"}, models.Album, None)
