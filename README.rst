@@ -11,7 +11,7 @@ Django isNull list_filter
 .. image:: https://codecov.io/gh/petrdlouhy/django-isnull-list-filter/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/petrdlouhy/django-isnull-list-filter
 
-Simple list_filter that offers filtering by __isnull.
+Simple list_filter that offers filtering by __isnull or by blank char field.
 
 Documentation
 -------------
@@ -21,7 +21,7 @@ The full documentation is at https://django-isnull-list-filter.readthedocs.io.
 Quickstart
 ----------
 
-Install Django isNull list_filter::
+Install django-isnull-list-filter::
 
     pip install django-isnull-list-filter
 
@@ -41,6 +41,17 @@ Directly use it in your admin:
              isnull_filter('author', _("Has got author"), negate=True),  # And you can negate the condition
          )
 
+or:
+
+.. code-block:: python
+
+    from isnull_filter import isblank_filter
+      class MyAdmin(admin.ModelAdmin):
+         list_filter = (
+             isblank_filter('author'),  # Just set the field
+             isblank_filter('author', _("Hasn't got author")),  # Or you can override the default filter title
+             isblank_filter('author', _("Has got author"), negate=True),  # And you can negate the condition
+         )
 
 Features
 --------

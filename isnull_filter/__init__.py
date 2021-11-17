@@ -7,7 +7,7 @@ from django.core.exceptions import FieldDoesNotExist
 from django.utils.translation import ugettext_lazy as _
 
 
-def isnull_filter(field_name, filter_title=None, negate=False):
+def isnull_filter(field_name, filter_title=None, negate=False, operator='null'):
     class HasRelatedFieldFilter(SimpleListFilter):
         parameter_name = '%s__isnull' % field_name
         related_field = field_name
@@ -22,18 +22,18 @@ def isnull_filter(field_name, filter_title=None, negate=False):
                     related_field = model._meta.get_field(field_name)
                 except FieldDoesNotExist:
                     model.objects.all().query.resolve_ref(field_name)
-                    self.title = _("Is field '%s' %snull?") % (field_name, negate_str)
+                    self.title = _(f"Is field '{field_name}' {negate_str}{operator}?")
                     return super(HasRelatedFieldFilter, self).__init__(request, field, model, model_admin)
 
                 if hasattr(related_field, 'related'):
                     related_title = related_field.related.model._meta.verbose_name_plural
-                    self.title = _("Is related '%s' %snull?") % (related_title, negate_str)
+                    self.title = _(f"Is related '{related_title}' {negate_str}{operator}?")
                 elif hasattr(related_field, 'related_model') and hasattr(related_field.related_model, "_meta"):
                     related_title = related_field.related_model._meta.verbose_name_plural
-                    self.title = _("Is related '%s' %snull?") % (related_title, negate_str)
+                    self.title = _(f"Is related '{related_title}' {negate_str}{operator}?")
                 else:
                     related_title = related_field.name
-                    self.title = _("Is field '%s' null?") % related_title
+                    self.title = _(f"Is field '{related_title}' {operator}?")
             super(HasRelatedFieldFilter, self).__init__(request, field, model, model_admin)
 
         def lookups(self, request, model_admin):
@@ -44,13 +44,23 @@ def isnull_filter(field_name, filter_title=None, negate=False):
 
         def queryset(self, request, queryset):
             kwargs = {}
-            if self.value() in ('false', 'False'):
-                kwargs["%s__isnull" % self.related_field] = False
-            if self.value() in ('true', 'True'):
-                kwargs["%s__isnull" % self.related_field] = True
-            if negate:
+            _negate = negate
+            if operator == 'null':
+                if self.value() in ('false', 'False'):
+                    kwargs[f"{self.related_field}__exact"] = False
+                if self.value() in ('true', 'True'):
+                    kwargs[f"{self.related_field}__exact"] = True
+            elif operator == 'blank':
+                if self.value() in ('false', 'False'):
+                    _negate = not negate
+                kwargs[f"{self.related_field}__exact"] = ''
+            if _negate:
                 return queryset.exclude(**kwargs).distinct()
             else:
                 return queryset.filter(**kwargs).distinct()
 
     return HasRelatedFieldFilter
+
+
+def isblank_filter(field_name, filter_title=None, negate=False):
+    return isnull_filter(field_name, filter_title=filter_title, negate=negate, operator='blank')
