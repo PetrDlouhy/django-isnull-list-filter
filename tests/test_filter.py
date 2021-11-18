@@ -8,13 +8,13 @@ test_django-isnull-list-filter
 Tests for `django-isnull-list-filter` models module.
 """
 import datetime
+from itertools import cycle
 
 from django.core.exceptions import FieldError
 from django.test import RequestFactory, TestCase
+from model_mommy import mommy
 
 from isnull_filter import isblank_filter, isnull_filter
-
-from model_mommy import mommy
 
 from . import models
 
@@ -29,7 +29,7 @@ class TestIsNullFilter(TestCase):
                 'Author',
                 _quantity=2,
             ),
-            name="Brothers in Arms",
+            name=cycle(["On Every Street", None]),
             _quantity=2,
         )
         mommy.make(
@@ -40,22 +40,21 @@ class TestIsNullFilter(TestCase):
             'Album',
             author__name='Mark Knopfler',
             released=None,
-            _quantity=4,
-            name="",
-        )
-        mommy.make(
-            'Album',
-            author__name='Mark Knopfler',
-            released=None,
-            _quantity=4,
+            _quantity=8,
+            name=cycle(["Brothers in Arms", "", None]),
         )
         self.factory = RequestFactory()
         self.request = self.factory.get("")
 
+    def test_isblank_filter_name_false(self):
+        f = isblank_filter('name')(self.request, {"name__isblank": "false"}, models.Album, None)
+        q = f.queryset(self.request, models.Album.objects.all())
+        self.assertEquals(q.count(), 4)
+
     def test_isblank_filter_name_true(self):
         f = isblank_filter('name')(self.request, {"name__isblank": "true"}, models.Album, None)
         q = f.queryset(self.request, models.Album.objects.all())
-        self.assertEquals(q.count(), 8)
+        self.assertEquals(q.count(), 6)
 
     def test_filter_song_set_yes(self):
         f = isnull_filter('song_set')(self.request, {"song_set__isnull": "true"}, models.Album, None)

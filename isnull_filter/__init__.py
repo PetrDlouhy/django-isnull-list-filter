@@ -57,7 +57,10 @@ def isnull_filter(field_name, filter_title=None, negate=False, operator='null'):
                 filters = Q(**{f"{self.related_field}__isnull": value})
                 if operator == 'blank':
                     blank_filter = Q(**{f"{self.related_field}__exact": ''})
-                    filters |= blank_filter if value else ~blank_filter
+                    if value:
+                        filters |= blank_filter
+                    else:
+                        filters &= ~blank_filter
 
             if negate:
                 return queryset.exclude(filters).distinct()
