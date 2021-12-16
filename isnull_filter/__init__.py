@@ -5,7 +5,7 @@ __version__ = '0.3.1'
 from django.contrib.admin import SimpleListFilter
 from django.core.exceptions import FieldDoesNotExist
 from django.db.models import Q
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 
 def isnull_filter(field_name, filter_title=None, negate=False, operator='null'):
