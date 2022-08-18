@@ -13,6 +13,15 @@ Django isNull list_filter
 
 Simple list_filter that offers filtering by __isnull or by blank char field.
 
+Read before using this app
+--------------------------
+
+Starting with Django 3.1 the ``EmptyFieldListFilter`` class was embedded: https://docs.djangoproject.com/en/4.1/ref/contrib/admin/filters/#using-a-field-name-and-an-explicit-fieldlistfilter
+
+It has very similar purpose as this app, although it might be little bit lest configurable.
+Consider using plain Django before using this app.
+
+
 Documentation
 -------------
 
